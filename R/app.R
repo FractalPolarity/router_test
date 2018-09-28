@@ -1,16 +1,6 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+# Shiny router test
 library(shiny)
 library(shiny.router)
-
-p404 <- page404(message404 = "Nie ma takiej strony")
 
 menu <- (
   tags$ul(
@@ -51,28 +41,22 @@ plot_callback <- function(input, output, session){
 router <- make_router(
   route("/", main_page, main_callback),
   route("plot", plot_page, plot_callback),
-  page_404 = p404
+  page_404 = page404(message404 = "Nie ma takiej strony")
 )
 
-# Define UI for application that draws a histogram
 ui <- shinyUI(fluidPage(
   router_ui(),
   actionButton("btn", "Go to plot with d=2")
 ))
 
-# Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session) {
   router(input, output, session)
-  
-  output$text_two <- renderText({print(get_query_param("d"))
-    warunek <- ifelse(!is.null(get_query_param("d")), paste("parameter d =", get_query_param("d")), "")
-    print(warunek)
-    warunek
-    # cbind("parameter d =", get_query_param("d"))
-    })
-  observeEvent(input$btn, {
+  output$text_two <- renderText(
+    ifelse(!is.null(get_query_param("d")), paste("parameter d =", get_query_param("d")), "")
+    )
+  observeEvent(input$btn, 
     change_page("?c=8&d=2#plot")
-  })
+  )
 })
 
 # Run the application 
